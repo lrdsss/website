@@ -1,25 +1,42 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>hello.</title>
   <style>
+    :root {
+      color-scheme: light;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: #f8f8f8;
       color: #111;
       font-family: "Courier New", Courier, monospace;
       max-width: 700px;
-      margin: 3rem auto;
-      line-height: 1.6;
+      margin: 3.5rem auto;
+      padding: 0 1.25rem;
+      font-size: 18px;
+      line-height: 1.7;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
     header {
       margin-bottom: 3rem;
     }
 
-    article {
-      margin-bottom: 2rem;
+    main {
+      display: grid;
+      gap: 3rem;
+    }
+
+    section {
+      scroll-margin-top: 2.5rem;
     }
 
     h1, h2 {
@@ -27,13 +44,84 @@
     }
 
     a {
-      color: #000;
+      color: #111;
       text-decoration: none;
-      border-bottom: 1px dotted #000;
+      border-bottom: 1px dotted currentColor;
+      transition: color 120ms ease, border-color 120ms ease;
     }
 
     a:hover {
-      text-decoration: underline;
+      color: #000;
+      border-bottom-style: solid;
+    }
+
+    a:focus-visible {
+      outline: 2px solid #111;
+      outline-offset: 2px;
+    }
+
+    button {
+      font: inherit;
+      background: #111;
+      color: #f8f8f8;
+      border: 1px solid #111;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .vibometer-panel {
+      margin-top: 1.5rem;
+      border: 1px solid #ddd;
+      padding: 1.25rem;
+      background: #fafafa;
+    }
+
+    .vibometer-options {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1rem 0 1.25rem;
+    }
+
+    .vibometer-option {
+      width: 100%;
+      text-align: left;
+      background: #f5f5f5;
+      color: #111;
+      border: 1px solid #ddd;
+    }
+
+    .vibometer-option.is-selected {
+      border-color: #111;
+      background: #eee;
+    }
+
+    .vibometer-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .vibometer-gif {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin-top: 1rem;
+      border: 1px solid #ddd;
+      background: #fff;
+    }
+
+    .is-hidden {
+      display: none;
     }
 
     footer {
@@ -41,29 +129,240 @@
       font-size: 0.9rem;
       color: #555;
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      * {
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>coole seite von laurids</h1>
+    <h1>website von laurids.</h1>
   </header>
 
   <main>
-    <article>
-      <h2><a href="artikel-1.html">cooler link</a></h2>
-      <p>xyz.</p>
-    </article>
+    <section id="home">
+      <h2>Home</h2>
+      <p>Herzlich Willkommen auf meiner Website! Ich wünsche dir einen schönen Tag!</p>
+    </section>
+ 
+    <section id="artikel">
+      <h2>Artikel</h2>
+      <p>Platzhalter für zukünftige Artikel.</p>
+      <ul>
+        <li>Artikel 1</li>
+        <li>Artikel 2</li>
+        <li>Artikel 3</li>
+      </ul>
+    </section>
 
-    <article>
-      <h2><a href="artikel-2.html">noch ein cooler link</a></h2>
-      <p>bla.</p>
-    </article>
+    <section id="vibometer">
+      <h2>Vibometer</h2>
+      <p>Beantworte 10 Fragen und erfahre, wie sehr du mit mir "vibest".</p>
+      <button id="vibometer-open" type="button">Vibometer öffnen</button>
+
+      <div id="vibometer-panel" class="vibometer-panel" hidden>
+        <p id="vibometer-progress">Frage 1 von 10</p>
+        <h3 id="vibometer-question">Frage kommt hier rein.</h3>
+        <div id="vibometer-options" class="vibometer-options"></div>
+        <div class="vibometer-actions">
+          <button id="vibometer-next" type="button" disabled>Weiter</button>
+          <button id="vibometer-restart" type="button" hidden>Nochmal</button>
+        </div>
+        <p id="vibometer-result" hidden></p>
+        <div id="vibometer-gifs">
+          <img id="vibometer-gif-80" class="vibometer-gif is-hidden" src="gifs/myn.gif" alt="Vibometer Ergebnis sehr hoch">
+          <img id="vibometer-gif-55" class="vibometer-gif is-hidden" src="gifs/aight.gif" alt="Vibometer Ergebnis hoch">
+          <img id="vibometer-gif-35" class="vibometer-gif is-hidden" src="gifs/mmmm.gif" alt="Vibometer Ergebnis mittel">
+          <img id="vibometer-gif-0" class="vibometer-gif is-hidden" src="gifs/punch.gif" alt="Vibometer Ergebnis niedrig">
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer>
     © 2026
   </footer>
 
+  <script>
+    const VIBO_PASSWORD = "lauridsistsocool";
+
+    const vibometerQuestions = [
+      { text: "Was würdest du an einem Samstag-Abend am liebsten machen?", options: [
+        { label: "Party und saufen", score: 0 },
+        { label: "Zocken", score: 1 },
+        { label: "mit Freunden Dart spielen", score: 2 }
+      ]},
+      { text: "Du hast einen Fehler bei der Arbeit gemacht. Wie gehst du vor?", options: [
+        { label: "Ich vertusche den Fehler, wenn möglich.", score: 1 },
+        { label: "Ich gestehe den Fehler ein und versuche ihn zu beheben", score: 2 },
+        { label: "Ich schiebe den Fehler jemand anderem in die Schuhe", score: 0 }
+      ]},
+      { text: "Was ist deine politische Einstellung?", options: [
+        { label: "links", score: 0 },
+        { label: "juckt mich nicht", score: 1 },
+        { label: "rechts", score: 2 }
+      ]},
+      { text: "Dein Kollege wird im Ausgang angepöbelt und angegriffen. Was unternimmst du?", options: [
+        { label: "Ich haue den Angreifern auf die Schnauze.", score: 2 },
+        { label: "Ich rufe die Polizei.", score: 1 },
+        { label: "Ich verdünnisiere mich.", score: 0 }
+      ]},
+      { text: "Was ist deine Einstellung zu Drogen?", options: [
+        { label: "Weg damit! Niemals!", score: 0 },
+        { label: "Jedem das seine!", score: 1 },
+        { label: "Offen und experimenterfreudig!", score: 2 }
+      ]},
+      { text: "Welches dieser Bücher liest du am ehesten?", options: [
+        { label: "Papillon", score: 2 },
+        { label: "Atomic Habits", score: 1 },
+        { label: "Queer Joy: 100 Botschaften die empowern.", score: 0 }
+      ]},
+      { text: "Findest du Migration ist ein problematisches Thema?", options: [
+        { label: "Es wird problematischer.", score: 1 },
+        { label: "Nein.", score: 0 },
+        { label: "Ja.", score: 2 }
+      ]},
+      { text: "Denkst du eine gewisse Gruppierung auf der Welt hat die Macht über fast alles?", options: [
+        { label: "Hä?", score: 0 },
+        { label: "Ja.", score: 2 },
+        { label: "Nein.", score: 0 }
+      ]},
+      { text: "Dein Kollege kommt mit einer Substanz, welche er probiert hat und sagt diese verändert alles. Was machst du?", options: [
+        { label: "Bloss nicht konsumieren!", score: 0 },
+        { label: "Her damit!", score: 1 },
+        { label: "Recherchieren und wahrscheinlich konsumieren.", score: 2 }
+      ]},
+      { text: "Wie hübsch findest du Laurids?", options: [
+        { label: "10/10", score: 2 },
+        { label: "10/10", score: 2 },
+        { label: "10/10", score: 2 }
+      ]}
+    ];
+
+    const openButton = document.getElementById("vibometer-open");
+    const panel = document.getElementById("vibometer-panel");
+    const progressEl = document.getElementById("vibometer-progress");
+    const questionEl = document.getElementById("vibometer-question");
+    const optionsEl = document.getElementById("vibometer-options");
+    const nextButton = document.getElementById("vibometer-next");
+    const restartButton = document.getElementById("vibometer-restart");
+    const resultEl = document.getElementById("vibometer-result");
+    const gif80El = document.getElementById("vibometer-gif-80");
+    const gif55El = document.getElementById("vibometer-gif-55");
+    const gif35El = document.getElementById("vibometer-gif-35");
+    const gif0El = document.getElementById("vibometer-gif-0");
+
+    let currentIndex = 0;
+    let totalScore = 0;
+    let selectedScore = null;
+
+    const totals = vibometerQuestions.reduce((acc, q) => {
+      const scores = q.options.map((opt) => opt.score);
+      acc.min += Math.min(...scores);
+      acc.max += Math.max(...scores);
+      return acc;
+    }, { min: 0, max: 0 });
+
+    function renderQuestion() {
+      const question = vibometerQuestions[currentIndex];
+      progressEl.textContent = `Frage ${currentIndex + 1} von ${vibometerQuestions.length}`;
+      questionEl.textContent = question.text;
+      optionsEl.innerHTML = "";
+      selectedScore = null;
+      nextButton.disabled = true;
+
+      question.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "vibometer-option";
+        button.textContent = option.label;
+        button.addEventListener("click", () => {
+          optionsEl.querySelectorAll(".vibometer-option").forEach((el) => {
+            el.classList.remove("is-selected");
+          });
+          button.classList.add("is-selected");
+          selectedScore = option.score;
+          nextButton.disabled = false;
+        });
+        optionsEl.appendChild(button);
+      });
+    }
+
+    function showResult() {
+      const normalized = (totalScore - totals.min) / (totals.max - totals.min || 1);
+      const percent = Math.round(normalized * 100);
+      let message = "Solider Vibe.";
+
+      if (percent >= 80) message = "Wir sind richtig fett am viben. I like you ;)";
+      else if (percent >= 55) message = "Solider Vibe aber es besteht Verbesserungspotential. Arbeite noch etwas an dir...";
+      else if (percent >= 35) message = "Minimaler Vibe. Mmmmmmmmmmmmmmmm...";
+      else message = "Tote Hose. Vermutlich Hopfen und Malz verloren...";
+
+      resultEl.textContent = `Dein Vibometer: ${percent}% - ${message}`;
+      resultEl.hidden = false;
+      gif80El.classList.add("is-hidden");
+      gif55El.classList.add("is-hidden");
+      gif35El.classList.add("is-hidden");
+      gif0El.classList.add("is-hidden");
+      if (percent >= 80) gif80El.classList.remove("is-hidden");
+      else if (percent >= 55) gif55El.classList.remove("is-hidden");
+      else if (percent >= 35) gif35El.classList.remove("is-hidden");
+      else gif0El.classList.remove("is-hidden");
+      nextButton.hidden = true;
+      restartButton.hidden = false;
+      optionsEl.innerHTML = "";
+    }
+
+    function startQuiz() {
+      currentIndex = 0;
+      totalScore = 0;
+      resultEl.hidden = true;
+      gif80El.classList.add("is-hidden");
+      gif55El.classList.add("is-hidden");
+      gif35El.classList.add("is-hidden");
+      gif0El.classList.add("is-hidden");
+      nextButton.hidden = false;
+      restartButton.hidden = true;
+      renderQuestion();
+    }
+
+    openButton.addEventListener("click", () => {
+      const input = prompt("Passwort fuer Vibometer:");
+      if (input === null) return;
+      if (input !== VIBO_PASSWORD) {
+        alert("Falsches Passwort.");
+        return;
+      }
+
+      panel.hidden = false;
+      openButton.disabled = true;
+      openButton.textContent = "Vibometer geöffnet";
+      startQuiz();
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (selectedScore === null) return;
+      totalScore += selectedScore;
+      currentIndex += 1;
+
+      if (currentIndex >= vibometerQuestions.length) {
+        showResult();
+        return;
+      }
+
+      renderQuestion();
+    });
+
+    restartButton.addEventListener("click", startQuiz);
+  </script>
 </body>
 </html>
